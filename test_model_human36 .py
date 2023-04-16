@@ -110,8 +110,8 @@ for action in ["walking", "eating", "smoking", "discussion", "directions",
         total_samples = 0
         total_mse = 0
         total_mpjpe = 0
-        # path = os.path.join(base_path,f'input{input_num}')
-        path = './data/human36/1'
+        
+       
         model_x = torch.load(os.path.join(path, 'generator_x.pkl')).to(device)
         model_y = torch.load(os.path.join(path, 'generator_y.pkl')).to(device)
         model_z = torch.load(os.path.join(path, 'generator_z.pkl')).to(device)
