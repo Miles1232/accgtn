@@ -16,10 +16,7 @@ class Generator(nn.Module):
         # self.sp_conv22 = Spatial_Conv(node_num)
         # self.sp_conv33 = Spatial_Conv(node_num)
 
-        self.gr_conv1 = GraphConvolution(in_features, out_features)
-        self.gr_conv2 = GraphConvolution(out_features, out_features*forward_expansion)
-        self.gr_conv3 = GraphConvolution(out_features*forward_expansion, out_features*forward_expansion)
-
+       
         self.sfgcn = SFGCN(in_features,out_features,out_features*forward_expansion,dropout)
         # self.sfgcn1 = SFGCN(in_features, out_features, out_features * forward_expansion, dropout)
 
@@ -28,7 +25,7 @@ class Generator(nn.Module):
                                output_T_dim,  heads, dropout,forward_expansion)
         # self.Transformer1 = STTransformer(input_dim, embed_size, num_layers, input_num,
         #                                  output_T_dim, heads, dropout, forward_expansion)
-    def forward(self, input1,input2):
+    def forward(self, input1):
         output1 = self.sp_conv1(input1)
         # print(input)
         output1 = output1.unsqueeze(-1)
@@ -38,10 +35,7 @@ class Generator(nn.Module):
 
         output3 = self.sp_conv3(output2)
         output3 = output3.unsqueeze(-1)
-        # # print(output3.shape)
-        # gr_output1 = self.gr_conv1(output1)
-        # gr_output2 = self.gr_conv2(gr_output1)
-        # gr_output3 = self.gr_conv3(gr_output2)
+     
         gr_output3 = self.sfgcn(output3)
         # print(gr_output3.shape)
         pred_ouput1 = self.Transformer(gr_output3)
