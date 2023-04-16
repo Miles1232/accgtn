@@ -68,7 +68,6 @@ count  = 0
 #                "sittingdown", "waiting", "walkingdog","walkingtogether","takingphoto"]:
 for action in [ "greeting",]:
     number = dic[action]
-    number = np.array([330])
     print(number)
     for i in range (len(number)):
         #load data
@@ -164,23 +163,23 @@ for action in [ "greeting",]:
         target_3d_data =output_dataset[:, :, :, :3]
 
 
-        output_a = model_a(input_acc_velocity,input_acc_velocity1)
+        output_a = model_a(input_acc_velocity)
         # output_a = (output_a+output_a2)/2
         output_a = output_a.view(target_acc_velocity.shape[0],target_acc_velocity.shape[1],node_num)
 
 
-        output_x = model_x(input_angle_x,input_angle_x1)
+        output_x = model_x(input_angle_x)
         # output_x = (output_x + output_x2) / 2
         output_x = output_x.view(target_angle_x.shape[0],target_angle_x.shape[1],node_num)
 
 
-        output_y = model_y(input_angle_y,input_angle_y1)
+        output_y = model_y(input_angle_y)
         # output_y = (output_y + output_y2) / 2
         output_y = output_y.view(target_angle_y.shape[0],target_angle_y.shape[1],node_num)
 
 
 
-        output_z = model_z(input_angle_z,input_angle_z1)
+        output_z = model_z(input_angle_z)
         # output_z = (output_z + output_z2) / 2
         output_z = output_z.view(target_angle_z.shape[0],target_angle_z.shape[1],node_num)
 
@@ -217,28 +216,8 @@ for action in [ "greeting",]:
                 else:
                     continue
         pred_v = pred_v.view(input_vel.shape[0],-1,25)
-        # print(pred_v)
-        # ### f反向velocity
-        # input_vel = torch.zeros((target_acc_velocity.shape[0], output_n, input_3d_data.shape[-2],1)).to(device)
-        # for x in range (input_vel.shape[0]):
-        #     input_vel[x,-1,:,0] = input_dataset2[x,-1,:,6]
-        # pred_v = torch.FloatTensor([])
-        # for y in range (input_vel.shape[0]):
-        #     for z in range (1,input_vel.shape[1]+1):
-        #         re_vel = space_angle_velocity.reconstruction_velocity1(pred_a1[y,-z,:],input_vel[y,-z,:,0],node_num)
-        #
-        #         pred_v = torch.cat([pred_v,re_vel],dim=0)
-        #         re_vel = re_vel
-        #         if z<input_vel.shape[1]:
-        #             input_vel[y,(-z-1),:,:] = re_vel
-        #         else:
-        #             continue
-        # pred_v2 = pred_v.view(input_vel.shape[0],-1,25)
-        # print(pred_v2)
-        # print(target_velocity)
-        # print(pred_v1.shape)
-        # print(pred_v.shape)
-        # pred_v = (pred_v1+pred_v2)/2
+        
+        
         #reconstruction_loss
         input_pose = torch.zeros((target_acc_velocity.shape[0], output_n, input_3d_data.shape[-2], input_3d_data.shape[-1]))
         for a in range(input_pose.shape[0]):
@@ -263,34 +242,9 @@ for action in [ "greeting",]:
                     continue
         # print(re_data.shape)
         re_data = re_data.view(target_3d_data.shape[0],-1,node_num,3)
-        # ## 反向 loss
-        # input_pose = torch.zeros((target_acc_velocity.shape[0], output_n, input_3d_data.shape[-2], input_3d_data.shape[-1]))
-        # for a in range(input_pose.shape[0]):
-        #     input_pose[a,-1,:,:] = input_3d_data1[a,-1,:,:]
-        # re_data = torch.FloatTensor([])
-        # # re_data2 = torch.FloatTensor([])
-        # for b in range (target_3d_data.shape[0]):
-        #     for c in range (1,target_3d_data.shape[1]+1):
-        #         reconstruction_coordinate = space_angle_velocity.reconstruction_motion1(pred_v2[b,-c,:], pred_angle_set1[b, -c,:,:], input_pose[b, -c, :, :],node_num)
-        #         # reconstruction_coordinate = space_angle_velocity.reconstruction_motion1(target_velocity[b, -c, :],
-        #         #                                                                        target_angle2[b, -c, :, :],
-        #         #                                                                        input_pose[b, -c, :, :], node_num)
-        #
-        #         re_data = torch.cat([re_data,reconstruction_coordinate],dim=0)
-        #         # re_data2 = torch.cat([re_data2,reconstruction_coordinate2],dim=0)
-        #         reconstruction_coordinate = reconstruction_coordinate
-        #         # reconstruction_coordinate2 = reconstruction_coordinate2
-        #         if c<target_3d_data.shape[1]:
-        #             input_pose[b,(-c-1),:,:] = reconstruction_coordinate
-        #             # input_pose2[b,c+1,:,:] = reconstruction_coordinate2
-        #         else:
-        #             continue
-        # re_data2 = re_data.view(target_3d_data.shape[0],-1,node_num,3)
+       
         #
         frame_re_data = re_data[0]
-        # frame_re_data2 = re_data2[0]
-        # print(frame_re_data2,frame_re_data1)
-        # frame_re_data = (frame_re_data1+frame_re_data2)/2
 
         # frame_re_data = torch.from_numpy(frame_re_data)
         frame_target_3d_data = target_3d_data[0]
@@ -302,17 +256,7 @@ for action in [ "greeting",]:
             frame_rec_loss = torch.mean(torch.norm(frame_re_data[i] - frame_target_3d_data[i], 2, 1))
             frame_rec_loss = frame_rec_loss.cpu()
             mpjpe_set.append(frame_rec_loss)
-        # mpjpe_set2 = []
-        # for i in range (1,frame_re_data2.shape[0]+1):
-        #     frame_re_data2 = frame_re_data2.to(device)
-        #     # frame_re_data2 = frame_re_data2.to(device)
-        #     frame_target_3d_data = frame_target_3d_data.to(device)
-        #     frame_rec_loss = torch.mean(torch.norm(frame_re_data2[-i] - frame_target_3d_data[i-1], 2, 1))
-        #     frame_rec_loss = frame_rec_loss.cpu()
-        #     mpjpe_set2.append(frame_rec_loss)
-        # mpjpe_set2 = mpjpe_set2[::-1]
-        # mpjpe_set2 = np.array(mpjpe_set2)
-        # mpjpe_set = (mpjpe_set1+mpjpe_set2)/2
+
         #save vis data
         frame_target_3d_data = frame_target_3d_data.cpu()
         # frame_re_data2 = np.array(frame_re_data2.cpu())
