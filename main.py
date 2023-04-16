@@ -158,34 +158,27 @@ for epoch in range(config['train_epoches']):
                     # in_shots2 = torch.tensor(in_shots2)
                     in_shots = in_shots.cuda()
                     out_shot = out_shot.cuda()
-                    in_shots2 = in_shots2.cuda()
 
                     input_angle = in_shots[:, :, :, 3:6]
-                    input_acc_velocity = in_shots[:, :, :, 7]
-                    input_angle2 = in_shots2[:, :, :, 3:6]
-                    input_acc_velocity2 = in_shots2[:, :, :, 7]
+                    input_acc_velocity = in_shots[:, :, :, 7]   
                     target_angle = out_shot[:, :, :, 3:6]
                     target_acc_velocity = out_shot[:, :, :, 7]
 
                     #read velocity
                     input_acc_velocity = input_acc_velocity.unsqueeze(-1).float()
                     target_acc_velocity = target_acc_velocity.float()
-                    input_acc_velocity2 = input_acc_velocity2.unsqueeze(-1).float()
 
 
                     #read angle_x
                     input_angle_x = input_angle[:,:,:,0].unsqueeze(-1).float()
-                    input_angle_x2 = input_angle2[:, :, :, 0].unsqueeze(-1).float()
                     target_angle_x = target_angle[:,:,:,0].float()
 
                     #read angle_y
                     input_angle_y = input_angle[:,:,:,1].unsqueeze(-1).float()
-                    input_angle_y2 = input_angle2[:, :, :, 1].unsqueeze(-1).float()
                     target_angle_y = target_angle[:,:,:,1].float()
 
                     #read angle_z
                     input_angle_z = input_angle[:,:,:,2].unsqueeze(-1).float()
-                    input_angle_z2 = input_angle2[:, :, :, 2].unsqueeze(-1).float()
                     target_angle_z = target_angle[:,:,:,2].float()
 
 
@@ -198,21 +191,21 @@ for epoch in range(config['train_epoches']):
 
 
 
-                    output_a = model_a(input_acc_velocity,input_acc_velocity2)
+                    output_a = model_a(input_acc_velocity)
                     output_a = output_a.view(target_acc_velocity.shape[0],output_T_dim, node_num)
                     loss_a += torch.mean(torch.norm((output_a- target_acc_velocity)*frame_weight*nodes_frame_weight, 2, 1))
                     # loss_a += torch.mean(
                     #     torch.norm((output_a - target_acc_velocity), 2, 1))
 
-                    output_x = model_x(input_angle_x,input_angle_x2)
+                    output_x = model_x(input_angle_x)
                     output_x = output_x.view(target_angle_x.shape[0], output_T_dim, node_num)
                     loss_x += torch.mean(torch.norm((output_x- target_angle_x)*frame_weight*nodes_frame_weight, 2, 1))
 
-                    output_y = model_y(input_angle_y,input_angle_y2)
+                    output_y = model_y(input_angle_y)
                     output_y = output_y.view(target_angle_y.shape[0], output_T_dim, node_num)
                     loss_y += torch.mean(torch.norm((output_y- target_angle_y)*frame_weight*nodes_frame_weight, 2, 1))
 
-                    output_z = model_z(input_angle_z,input_angle_z2)
+                    output_z = model_z(input_angle_z)
                     output_z = output_z.view(target_angle_z.shape[0], output_T_dim, node_num)
                     loss_z += torch.mean(torch.norm((output_z- target_angle_z)*frame_weight*nodes_frame_weight, 2, 1))
 
@@ -246,45 +239,36 @@ for epoch in range(config['train_epoches']):
 
                     # print(len(data))
                     in_shots, out_shot,in_shots2= data
-                    # print(type(in_shots2))
-                    # in_shots = torch.from_numpy(in_shots)
-                    # out_shot = torch.from_numpy(out_shot)
-                    # in_shots2 = torch.from_numpy(in_shots2)
-
-                    # print(np.isnan(in_shots).sum())
-                    # print(in_shots2.shape)
+   
                     in_shots = in_shots.cuda() ##16 20 25 8
                     out_shot = out_shot.cuda() ## 16 25 25 8
-                    in_shots2 = in_shots2.cuda()
-                    # print('in_shots:\n',in_shots.shape)
-                    # print('out_shot',out_shot.shape)
+    
                     input_angle = in_shots[:, :, :, 3:6]  ## 16 20 25 3
                     input_angle2 = in_shots2[:,:,:,3:6]
-                    # print('input_angle',input_angle.shape)
+    
                     input_acc_velocity = in_shots[:, :, :, 7]##16 20 25
                     input_acc_velocity2 = in_shots2[:, :, :, 7]
-                    # print('input_acc_v',input_acc_velocity.shape)
+
                     target_angle = out_shot[:, :, :, 3:6] ## 16 25 25 3
                     target_acc_velocity = out_shot[:, :, :, 7] ##16 25 25
 
                     #read velocity
                     input_acc_velocity = input_acc_velocity.unsqueeze(-1).float() ## 16 20 25 1
-                    input_acc_velocity2 = input_acc_velocity2.unsqueeze(-1).float()  ## 16 20 25 1
+                 
                     target_acc_velocity = target_acc_velocity.float() ## 16 25 25
 
                     #read angle_x
                     input_angle_x = input_angle[:,:,:,0].unsqueeze(-1).float()
-                    input_angle_x2 = input_angle2[:, :, :, 0].unsqueeze(-1).float()
-                    # print(input_angle_x.shape)
+                  
                     target_angle_x = target_angle[:,:,:,0].float()
 
                     #read angle_y
                     input_angle_y = input_angle[:,:,:,1].unsqueeze(-1).float()
-                    input_angle_y2 = input_angle2[:, :, :, 1].unsqueeze(-1).float()
+                 
                     target_angle_y = target_angle[:,:,:,1].float()
                     #read angle_z
                     input_angle_z = input_angle[:,:,:,2].unsqueeze(-1).float()
-                    input_angle_z2 = input_angle2[:, :, :, 2].unsqueeze(-1).float()
+             
                     target_angle_z = target_angle[:,:,:,2].float()
 
 
@@ -297,34 +281,28 @@ for epoch in range(config['train_epoches']):
 
                     # print('input_acc_velocity:\n',input_acc_velocity.shape)
 
-                    output_a = model_a(input_acc_velocity,input_acc_velocity2) ## 16 25 25
-                    # print(input_acc_velocity[0],output_a[0])
+                    output_a = model_a(input_acc_velocity) ## 16 25 25
                     output_a = output_a.view(target_acc_velocity.shape[0],output_T_dim, node_num)
-                    # print(target_acc_velocity)
-                    # print(output_a)
+            
                     loss_a += torch.mean(torch.norm((output_a- target_acc_velocity)*frame_weight*nodes_frame_weight, p=2, dim=1))
-                    # loss_a += torch.mean(torch.norm((output_a - target_acc_velocity) , p=2, dim=1))
 
-                    output_x = model_x(input_angle_x,input_angle_x2)
+                    output_x = model_x(input_angle_x)
                     output_x = output_x.view(target_angle_x.shape[0], output_T_dim, node_num)
                     loss_x += torch.mean(torch.norm((output_x- target_angle_x)*frame_weight*nodes_frame_weight, 2, 1))
-                    # loss_x += torch.mean(torch.norm((output_x - target_angle_x), p=2, dim=1))
-
-                    output_y = model_y(input_angle_y,input_angle_y2)
+                    
+                    output_y = model_y(input_angle_y)
                     output_y = output_y.view(target_angle_y.shape[0], output_T_dim, node_num)
                     loss_y += torch.mean(torch.norm((output_y- target_angle_y)*frame_weight*nodes_frame_weight, 2, 1))
-                    # loss_y += torch.mean(torch.norm((output_y - target_angle_y), p=2, dim=1))
+                 
 
-                    output_z = model_z(input_angle_z,input_angle_z2)
+                    output_z = model_z(input_angle_z)
                     output_z = output_z.view(target_angle_z.shape[0], output_T_dim, node_num)
                     loss_z += torch.mean(torch.norm((output_z- target_angle_z)*frame_weight*nodes_frame_weight, 2, 1))
-                    # loss_z += torch.mean(torch.norm((output_z - target_angle_z), p=2, dim=1))
-
+       
 
                     total_loss = loss_a*10 + loss_x + loss_y + loss_z
                     total_loss.backward()
-                    print(loss_a,loss_x,loss_y,loss_z)
-                    # total_loss.backward()
+      
 
                     nn.utils.clip_grad_norm_(model_x.parameters(), config['gradient_clip'])
                     nn.utils.clip_grad_norm_(model_y.parameters(), config['gradient_clip'])
